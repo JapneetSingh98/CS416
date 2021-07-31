@@ -11,15 +11,20 @@
 
                 data = await d3.csv("https://github.com/JapneetSingh98/japneetsingh98.github.io/blob/ab34d1e39e9261b023c713f8984d9e95abe3305e/the-office-lines-scripts.csv"); //https://flunky.github.io/cars2017.csv"); 
 
-                xdomain = [0, 1000];
+                xdomain = [0, 187];
                 xrange = [0, 1000];
-                ydomain = [10, 150000];
+                ydomain = [0, 150000];
                 yrange = [500, 0];
 
                 xs = d3.scaleLinear().domain(xdomain).range(xrange);
                 ys = d3.scaleLinear().domain(ydomain).range(yrange);
 
-                var numWords = {};
+                var numWords = {};          //  {
+                                            //      speaker: {
+                                            //          epLastSpoken: number
+                                            //          curWordCount: number
+                                            //      }
+                                            //  }
 
                 d3.select("svg")
                     .append("g")
@@ -27,10 +32,35 @@
                         .selectAll("circle")
                         .data(data)
                         .enter()
-                        .append("circle")
-                            .attr("cx", function(d, i) { return xs(parseInt(d.season)*100 + parseInt(d.episode)); })
-                            .attr("cy", function(d, i) { return ys(d.line_text.split(" ").length); })
-                            .attr("r",    function(d, i) { return 2; });
+                        .append("line")
+                            .style("stroke-width", 10)
+
+                            .attr("x1", function(d, i) { 
+                                if (d.speaker in numWords) {
+                                    return parseInt(numWords[d.speaker]["epLastSpoken"]);
+                                } else {
+                                    numWords[d.speaker] = {"epLastSpoken": parseInt(d.total_episode_number), "curWordCount": 0};
+                                    return parseInt(d.total_episode_number);
+                                }
+                            })
+
+                            .attr("y1", function(d, i) {
+                                return parseInt(numWords[d.speaker]["curWordCount"]);
+                            })
+
+                            .attr("x2", function(d, i) {
+                                numWords[d.speaker]["epLastSpoken"] = parseInt(d.total_episode_number);
+                                return parseInt(d.total_episode_number);
+                            })
+
+                            .attr("y2", function(d, i) {
+                                numWords[d.speaker]["curWordCount"] = numWords[d.speaker]["curWordCount"] + d.line_text.split(" ").length;
+                                return numWords[d.speaker]["curWordCount"];
+                            });
+
+                            //.attr("cx", function(d, i) { return xs(parseInt(d.season)*100 + parseInt(d.episode)); })
+                            //.attr("cy", function(d, i) { return ys(d.line_text.split(" ").length); })
+                            //.attr("r",    function(d, i) { return 2; });
 
                 var y_axis = d3.axisLeft(ys)
                         .tickValues([10, 20, 50, 100]); 
