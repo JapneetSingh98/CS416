@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
     <script src='https://d3js.org/d3.v5.min.js'></script>
-    <style> circle {fill: lightblue; stroke: black;} </style>
+    <!-- <style> circle {fill: lightblue; stroke: black;} </style> -->
     <body onload='init()'>
-        <svg width=300 height=300>
+        <svg width=1200 height=600>
         </svg>
 
         <script>
             async function init() {
 
-                data = await d3.csv("https://raw.githubusercontent.com/JapneetSingh98/japneetsingh98.github.io/main/the-office-lines-scripts.csv"); //https://flunky.github.io/cars2017.csv"); 
+                data = await d3.csv("/../small_script.csv"); //https://flunky.github.io/cars2017.csv"); 
 
                 xdomain = [0, 187];
-                xrange = [0, 1000];
+                xrange = [0, 600];
                 ydomain = [0, 150000];
                 yrange = [500, 0];
 
@@ -29,7 +29,7 @@
                 d3.select("svg")
                     .append("g")
                         .attr("transform", "translate(50,50)")
-                        .selectAll("circle")
+                        .selectAll("line")
                         .data(data)
                         .enter()
                         .append("line")
