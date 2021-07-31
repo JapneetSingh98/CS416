@@ -16,7 +16,7 @@
                 ydomain = [10, 150];
                 yrange = [200, 0];
 
-                xs = d3.scaleLog().domain(xdomain).range(xrange);
+                xs = d3.scaleLinear().domain(xdomain).range(xrange);
                 ys = d3.scaleLog().domain(ydomain).range(yrange);
 
                 d3.select("svg")
