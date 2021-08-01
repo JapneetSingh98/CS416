@@ -20,7 +20,7 @@
 
                 xdomain = [0, 187];
                 xrange = [0, 1000];
-                ydomain = [0, 200000];
+                ydomain = [0, 1000000];
                 yrange = [500, 0];
 
                 xs = d3.scaleLinear().domain(xdomain).range(xrange);
@@ -33,6 +33,10 @@
                                             //      speaker: lastAppearance
                                             //  }
 
+                var curSpeaker = "";
+                var x1 = 0;
+                var y1 = 0;
+
                 d3.select("svg")
                     .append("g")
                         .attr("transform", "translate(50,50)")
@@ -41,13 +45,15 @@
                         .enter()
                         .append("line")
                             .style("stroke", function(d, i) {
-                                if (d.speaker == "Michael") {
+                                curSpeaker = d.speaker;
+
+                                if (curSpeaker == "Michael") {
                                     return "lightgreen";
-                                } else if (d.speaker == "Jim") {
+                                } else if (curSpeaker == "Jim") {
                                     return "blue";
-                                } else if (d.speaker == "Dwight") {
+                                } else if (curSpeaker == "Dwight") {
                                     return "brown";
-                                } else if (d.speaker == "Pam") {
+                                } else if (curSpeaker == "Pam") {
                                     return "pink";
                                 } else {
                                     return "black";
@@ -55,28 +61,33 @@
                             })
                             .style("stroke-width", 2)
                             .attr("x1", function(d, i) { 
-                                if (d.speaker in lastAppearance) {
-                                    return xs(parseInt(lastAppearance[d.speaker]));
+
+                                if (curSpeaker in lastAppearance) {
+                                    x1 = parseInt(lastAppearance[curSpeaker]);
+                                    return xs(x1);
                                 } else {
-                                    lastAppearance[d.speaker] = parseInt(d.total_episode_number);
-                                    return xs(lastAppearance[d.speaker]);
+                                    x1 = parseInt(d.total_episode_number);
+                                    return xs(x1);
                                 }
+                                
                             })
                             .attr("y1", function(d, i) {
-                                if (d.speaker in numWords) {
-                                    return ys(parseInt(numWords[d.speaker]));
+                                return ys(parseInt(numWords[curSpeaker]));
+                                if (curSpeaker in numWords) {
+                                    y1 = parseInt(numWords[curSpeaker]);
+                                    return ys(y1);
                                 } else {
-                                    numWords[d.speaker] = 0;
-                                    return ys(0);
+                                    y1 = 0;
+                                    return ys(y1);
                                 }
                             })
                             .attr("x2", function(d, i) {
-                                lastAppearance[d.speaker] = parseInt(d.total_episode_number);
-                                return xs(lastAppearance[d.speaker]);
+                                lastAppearance[curSpeaker] = parseInt(d.total_episode_number);
+                                return xs(lastAppearance[curSpeaker]);
                             })
                             .attr("y2", function(d, i) {
-                                numWords[d.speaker] = parseInt(numWords[d.speaker]) + parseInt(d.line_text.split(" ").length);
-                                return ys(numWords[d.speaker]);
+                                numWords[curSpeaker] = y1 + parseInt(d.line_text.split(" ").length);
+                                return ys(numWords[curSpeaker]);
                             });
 
                             //.attr("cx", function(d, i) { return xs(parseInt(d.season)*100 + parseInt(d.episode)); })
