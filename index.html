@@ -34,6 +34,14 @@
         </section>
         <br><hr><br>
         <section id="section02" class="demo">
+            <h1>Number of Mentions per Character</h1>
+            <svg id="numMentions" width=1200 height=600></svg>
+            <br>
+            <a href="#section01"><span></span>Prev</a>
+            <a href="#section03"><span></span>Next</a>
+        </section>
+        <br><hr><br>
+        <section id="section03" class="demo">
             <h1>IMDb Rating per Episode</h1>
             <svg id=ratingPerEpisode width=1200 height=600></svg>
             <br>
@@ -52,8 +60,7 @@
                 <button type="button" onclick="showStats('S9')">S9</button>
             </div> -->
             <!-- <h1>Scroll Down Button #1</h1> -->
-            <a href="#section01"><span></span>Prev</a>
-            <a href="#section03"><span></span>Next</a>
+            <a href="#section02"><span></span>Prev</a>
         </section>
         
         <!-- <p id="demo"></p> -->
@@ -78,6 +85,7 @@
 
                 var numWords = {};
                 var lastAppearance = {};
+                var numMentions = {};
 
                 var keyPeople = {
                     "Michael": "green",
@@ -145,6 +153,62 @@
 
                 d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,700)').call(x_axis);
                 d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,0)').call(y_axis);
+
+                d3.select("#numMentions").append("g").attr("transform", "translate(50,0)")
+                .selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                    .attr("fill", function(d, i) {
+                        if (d.speaker in keyPeople) {
+                            return keyPeople[d.speaker];
+                        } else {
+                            return "lightgrey";
+                        }
+                    })
+                    .attr("cx", function(d, i) {
+                        lastAppearance[d.speaker] = parseInt(d.total_episode_number);
+                        return xs(lastAppearance[d.speaker]);
+                    })
+                    .attr("cy", function(d, i) {
+                        if (d.speaker in numWords) {
+                            numWords[d.speaker] = parseInt(numWords[d.speaker]) + parseInt(d.line_text.split(" ").length);
+                        } else {
+                            numWords[d.speaker] = parseInt(d.line_text.split(" ").length);
+                        }
+                        
+                        return ys(parseInt(numWords[d.speaker]));
+                    })
+                    .attr("r",  function(d, i) {
+                        if (d.speaker in keyPeople) {
+                            return 2.5;
+                        } else {
+                            return 1;
+                        }
+                    })
+                    .on("mouseover", function(d) {
+                        div.transition()		
+                            .duration(200)		
+                            .style("opacity", .9);		
+                        div.html(d.speaker + "   S" + d.season + "•E" +d.episode + "<br>" + d.line_text)	
+                            .style("left", (d3.event.pageX) + "px")		
+                            .style("top", (d3.event.pageY - 28) + "px");	
+                    })
+                    .on("mouseout", function(d) {		
+                        div.transition()		
+                            .duration(500)		
+                            .style("opacity", 0);
+                    });
+
+            var x_axis = d3.axisBottom(xs)
+                .tickValues([1, 7, 29, 52, 66, 92, 116, 140, 164])
+                .tickFormat((d, i) => ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'][i]); 
+
+            var y_axis = d3.axisLeft(ys)
+                .tickValues([0, 5000, 10000, 20000, 40000, 80000, 160000]); 
+
+            d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,700)').call(x_axis);
+            d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,0)').call(y_axis);
 
 
                 //document.getElementById("demo").innerHTML = "before";
