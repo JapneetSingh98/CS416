@@ -45,20 +45,33 @@
             <a href="#section02"><span></span>Next</a>
         </section>
         <br><hr><br>
+
         <section id="section02" class="demo">
             <h1>Number of Mentions per Character</h1>
-            <svg id="numMentions" width=1200 height=800></svg>
+            <p>While the previous graph showed how much each character spoke, this next graph showcases how often a character was mentioned.</p>
+            <p>To do this, we increase the character's mention value each time their name appears in the script, regardless of who said it.</p>
+            <p>Similar to the first chart, we see that Michael has been name dropped the most out of any character, with Dwight and Jim as second and third place overall.</p>
+            <p>Interestingly, we can see that Jim and Pam's names appeared at approximately equal frequencies up until Season 6, when Jim started to be mentioned much more frequently. </p>
+
+            <svg id="numMentions" width=1200 height=700></svg>
             <br>
             <a href="#section01"><span></span>Prev</a>
             <a href="#section03"><span></span>Next</a>
         </section>
         <br><hr><br>
+
         <section id="section03" class="demo">
             <h1>IMDb Rating per Episode</h1>
+            <p>This chart shows each of the episodes' rating as per IMDb.</p>
+            <p>With this chart, we can see that <i>The Office</i> never had an episode rate 6/10 or lower, and that there were multiple episodes that went above the 9/10 mark.</p>
+            <p>Moving the cursor over the chart, we notice that Seasons 2, 3, 4, and 5 were regularly rated with the best episodes, with a decline in the second half of Season 6 and first half of Season 7. This is when Dunder Miflin was incorporated into Sabre.</p>
+            <p>The back half of Season 6 has a spike in ratings as the show prepares for Michael's departure. Following Michael's final regular appearance, the show's ratings drop to their lowest scores, that is until the final few episodes of the series.</p>
+
             <svg id="ratingPerEpisode" width=1200 height=600></svg>
             <br>
             <a href="#section02"><span></span>Prev</a>
         </section>
+        <br><br><br><br><br><br><hr>
         
         <!-- <p id="demo"></p> -->
 
@@ -154,7 +167,7 @@
 
 
 
-                mention_ydomain = [0, 1500];
+                mention_ydomain = [0, 1010];
                 mention_ys = d3.scaleLinear().domain(mention_ydomain).range(yrange);
 
                 d3.select("#numMentions").append("g").attr("transform", "translate(50,0)")
@@ -215,9 +228,9 @@
                         });
 
                 var mentiony_axis = d3.axisLeft(mention_ys)
-                    .tickValues([1, 100, 200, 300, 400]); 
+                    .tickValues([1, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]); 
 
-                d3.select('#numMentions').append('g').attr('transform', 'translate(50,700)').call(x_axis);
+                d3.select('#numMentions').append('g').attr('transform', 'translate(50,600)').call(x_axis);
                 d3.select('#numMentions').append('g').attr('transform', 'translate(50,0)').call(mentiony_axis);
 
 
@@ -301,6 +314,7 @@
                 d3.select('#ratingPerEpisode').append('g').attr('transform', 'translate(50,0)').call(ratings_y_axis);
 
             }
+            
 
             
         </script>
