@@ -27,15 +27,27 @@
     <body onload='init()'>
         <section id="section01" class="demo">
             <h1>Number of Words Spoken per Character Throughout <i>The Office</i></h1>
-            <svg id="wordsPerCharacter" width=1200 height=800></svg>
+
+            <p>This chart showcases every character in <i>The Office</i>, and keeps track of how many words they have said throughout the 9 seasons.</p>
+
+            <p>Every circle on this chart refers to a character's line. 
+                If you move your mouse over a point, you will see the character's name, which season and episode the line is from, and then the line itself.</p>
+
+            <p><b>Green:</b> Michael, <b>Brown:</b> Dwight, <b>Blue:</b> Jim, <b>Pink:</b> Pam, <b>Red:</b> Andy, <b>Purple:</b> Oscar</p>
+
+            <p>In this chart we see that Michael dominates the script of <i>The Office</i>, speaking about 3x more than the next most spoken character. 
+                Even after his departure for the final 2 seasons, Michael had 2x more words than any other character.</p>
+
+            <p>We can also take note that once Michael leaves, Andy has a sharp increase in word count, indicating that he has filled in a hole in the show left behind by Michael.</p>
+
+            <svg id="wordsPerCharacter" width=1200 height=700></svg>
             <br>
-            <!-- <h1>Scroll Down Button #1</h1> -->
             <a href="#section02"><span></span>Next</a>
         </section>
         <br><hr><br>
         <section id="section02" class="demo">
             <h1>Number of Mentions per Character</h1>
-            <svg id="numMentions" width=1200 height=600></svg>
+            <svg id="numMentions" width=1200 height=800></svg>
             <br>
             <a href="#section01"><span></span>Prev</a>
             <a href="#section03"><span></span>Next</a>
@@ -43,23 +55,8 @@
         <br><hr><br>
         <section id="section03" class="demo">
             <h1>IMDb Rating per Episode</h1>
-            <svg id=ratingPerEpisode width=1200 height=600></svg>
+            <svg id="ratingPerEpisode" width=1200 height=600></svg>
             <br>
-            <!-- <p id="seasonLabel">Season _</p>
-            <p id="avgRating">Avg Rating: </p>
-            <p id="avgRating">Avg Rating: </p>
-            <div class="wrapper">
-                <button type="button" onclick="showStats('S1')">S1</button>
-                <button type="button" onclick="showStats('S2')">S2</button>
-                <button type="button" onclick="showStats('S3')">S3</button>
-                <button type="button" onclick="showStats('S4')">S4</button>
-                <button type="button" onclick="showStats('S5')">S5</button>
-                <button type="button" onclick="showStats('S6')">S6</button>
-                <button type="button" onclick="showStats('S7')">S7</button>
-                <button type="button" onclick="showStats('S8')">S8</button>
-                <button type="button" onclick="showStats('S9')">S9</button>
-            </div> -->
-            <!-- <h1>Scroll Down Button #1</h1> -->
             <a href="#section02"><span></span>Prev</a>
         </section>
         
@@ -78,7 +75,7 @@
                 xdomain = [0, 187];
                 xrange  = [0, 1000];
                 ydomain = [0, 200000];
-                yrange  = [700, 0];
+                yrange  = [600, 0];
 
                 xs = d3.scaleLinear().domain(xdomain).range(xrange);
                 ys = d3.scaleLinear().domain(ydomain).range(yrange);
@@ -93,7 +90,7 @@
                     "Dwight": "brown",
                     "Pam": "pink",
                     "Andy": "red",
-                    "Oscar": "purple",
+                    "Oscar": "purple"
                 };
 
                 var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
@@ -134,7 +131,7 @@
                             div.transition()		
                                 .duration(200)		
                                 .style("opacity", .9);		
-                            div.html(d.speaker + "   S" + d.season + "•E" +d.episode + "<br>" + d.line_text)	
+                            div.html(d.speaker + "   S" + d.season + "-E" +d.episode + "<br>" + d.line_text)	
                                 .style("left", (d3.event.pageX) + "px")		
                                 .style("top", (d3.event.pageY - 28) + "px");	
                         })
@@ -151,64 +148,79 @@
                 var y_axis = d3.axisLeft(ys)
                     .tickValues([0, 5000, 10000, 20000, 40000, 80000, 160000]); 
 
-                d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,700)').call(x_axis);
+                d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,600)').call(x_axis);
                 d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,0)').call(y_axis);
 
+
+
+
+                mention_ydomain = [0, 1500];
+                mention_ys = d3.scaleLinear().domain(mention_ydomain).range(yrange);
+
                 d3.select("#numMentions").append("g").attr("transform", "translate(50,0)")
-                .selectAll("circle")
-                .data(data)
-                .enter()
-                .append("circle")
-                    .attr("fill", function(d, i) {
-                        if (d.speaker in keyPeople) {
-                            return keyPeople[d.speaker];
-                        } else {
-                            return "lightgrey";
-                        }
-                    })
-                    .attr("cx", function(d, i) {
-                        lastAppearance[d.speaker] = parseInt(d.total_episode_number);
-                        return xs(lastAppearance[d.speaker]);
-                    })
-                    .attr("cy", function(d, i) {
-                        if (d.speaker in numWords) {
-                            numWords[d.speaker] = parseInt(numWords[d.speaker]) + parseInt(d.line_text.split(" ").length);
-                        } else {
-                            numWords[d.speaker] = parseInt(d.line_text.split(" ").length);
-                        }
-                        
-                        return ys(parseInt(numWords[d.speaker]));
-                    })
-                    .attr("r",  function(d, i) {
-                        if (d.speaker in keyPeople) {
-                            return 2.5;
-                        } else {
-                            return 1;
-                        }
-                    })
-                    .on("mouseover", function(d) {
-                        div.transition()		
-                            .duration(200)		
-                            .style("opacity", .9);		
-                        div.html(d.speaker + "   S" + d.season + "•E" +d.episode + "<br>" + d.line_text)	
-                            .style("left", (d3.event.pageX) + "px")		
-                            .style("top", (d3.event.pageY - 28) + "px");	
-                    })
-                    .on("mouseout", function(d) {		
-                        div.transition()		
-                            .duration(500)		
-                            .style("opacity", 0);
-                    });
+                    .selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                        .attr("fill", function(d, i) {
+                            if (d.speaker in keyPeople) {
+                                return keyPeople[d.speaker];
+                            } else {
+                                return "lightgrey";
+                            }
+                        })
+                        .attr("cx", function(d, i) {
+                            lastAppearance[d.speaker] = parseInt(d.total_episode_number);
+                            return xs(lastAppearance[d.speaker]);
+                        })
+                        .attr("cy", function(d, i) {
+                            var sentence = d.line_text;
+                            sentence = sentence.split(" ");
+                            for (let i = 0; i < sentence.length; i++) {
+                                
+                                if (sentence[i] in keyPeople) {
+                                    if (sentence[i] in numMentions) {
+                                        numMentions[sentence[i]] = parseInt(numMentions[sentence[i]]) + 1;
+                                    } else {
+                                        numMentions[sentence[i]] = 1;
+                                    }
+                                }
+                            }
 
-            var x_axis = d3.axisBottom(xs)
-                .tickValues([1, 7, 29, 52, 66, 92, 116, 140, 164])
-                .tickFormat((d, i) => ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'][i]); 
+                            if (d.speaker in keyPeople) {
+                                return mention_ys(numMentions[d.speaker]);
+                            }
+                            
+                            return mention_ys(0);
+                        })
+                        .attr("r",  function(d, i) {
+                            if (d.speaker in keyPeople) {
+                                return 2.5;
+                            } else {
+                                return 0;
+                            }
+                        })
+                        .on("mouseover", function(d) {
+                            div.transition()		
+                                .duration(200)		
+                                .style("opacity", .9);		
+                            div.html(d.speaker + " has been mentioned " + numMentions[d.speaker] + " times")	
+                                .style("left", (d3.event.pageX) + "px")		
+                                .style("top", (d3.event.pageY - 28) + "px");	
+                        })
+                        .on("mouseout", function(d) {		
+                            div.transition()		
+                                .duration(500)		
+                                .style("opacity", 0);
+                        });
 
-            var y_axis = d3.axisLeft(ys)
-                .tickValues([0, 5000, 10000, 20000, 40000, 80000, 160000]); 
+                var mentiony_axis = d3.axisLeft(mention_ys)
+                    .tickValues([1, 100, 200, 300, 400]); 
 
-            d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,700)').call(x_axis);
-            d3.select('#wordsPerCharacter').append('g').attr('transform', 'translate(50,0)').call(y_axis);
+                d3.select('#numMentions').append('g').attr('transform', 'translate(50,700)').call(x_axis);
+                d3.select('#numMentions').append('g').attr('transform', 'translate(50,0)').call(mentiony_axis);
+
+
 
 
                 //document.getElementById("demo").innerHTML = "before";
@@ -267,11 +279,11 @@
                         .attr("y", function(d, i) { return ratings_ys(d); })
                         .attr("width", function(d, i) { return ratings_xs(i+1) - ratings_xs(i); })
                         .attr("height", function(d, i) { return 500 - ratings_ys(d)})
-                        .on("mouseover", function(d) {
+                        .on("mouseover", function(d, i) {
                             div.transition()		
                                 .duration(200)		
                                 .style("opacity", .9);		
-                            div.html("IMDb rating: " + d +"/10")	
+                            div.html("Episode " + i + "'s IMDb rating: " + d + "/10")	
                                 .style("left", (d3.event.pageX) + "px")		
                                 .style("top", (d3.event.pageY - 28) + "px");	
                         })
